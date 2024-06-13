@@ -8,4 +8,12 @@
 
 {"email": "账户email", "key": "账户key", "domainInfos":[["名称", "根域", "目标文件名"], ["名称", "根域"]]}
 
-比如完整域名为 A.B.com，根域为 B.com 则 config.json 为 {"email": "账户email", "key": "账户key", "domainInfos":[["A", "B.com"]]}, 由于 https://zip.baipiao.eu.org 中提供了多条线路，多个端口，若限制使用443端口且支持tls，则 config.json 为 {"email": "账户email", "key": "账户key", "domainInfos":[["A", "B.com", "1-443"]}，具体文件名参考 https://zip.baipiao.eu.org
+比如完整域名为 A.B.com，根域为 B.com 则config.json 为 
+
+{"email": "账户email", "key": "账户key", "domainInfos":[["A", "B.com"]]},
+
+由于 https://zip.baipiao.eu.org 中提供了多条线路，多个端口，若限制使用443端口且支持tls，则 config.json 为 
+
+{"email": "账户email", "key": "账户key", "domainInfos":[["A", "B.com", "1-443"]}
+
+具体文件名参考 https://zip.baipiao.eu.org
