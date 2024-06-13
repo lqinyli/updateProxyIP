@@ -288,6 +288,9 @@ func main() {
 	// 解析命令行参数
 	flag.Parse()
 
+	// 设置日志输出
+	log.SetOutput(os.Stdout)
+
 	// 打开文件
 	file, err := os.Open(*filePath)
 	if err != nil {
