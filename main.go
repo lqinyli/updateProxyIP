@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -61,7 +62,7 @@ func getLatency(ip string, count int) LatencyResult {
 
 func getIP(content string) string {
 	var wg sync.WaitGroup
-	ipList := strings.Split(content, "\n")
+	ipList := strings.Split(strings.Trim(content, "\n"), "\n")
 	resultChan := make(chan LatencyResult, len(ipList))
 
 	for _, ip := range ipList {
@@ -86,7 +87,8 @@ func getIP(content string) string {
 	nowtime := time.Now().Format("2006-01-02 15:04:05")
 	for _, item := range results {
 		if item.LossRate <= 0.35 {
-			log.Printf("[%s]所选ip-%s的丢包率为：%f，延时为：%dms\n", nowtime, item.IP, item.LossRate, item.Latency)
+			lossRateStr := fmt.Sprintf("%.2f", item.LossRate)
+			log.Printf("[%s]所选ip-%s的丢包率为：%s，延时为：%dms\n", nowtime, item.IP, lossRateStr, item.Latency)
 			return item.IP
 		}
 	}
@@ -204,7 +206,7 @@ func uploadIP(ip, name string, domain string, email string, key string) {
 
 		if resp.StatusCode == 200 {
 			nowtime := time.Now().Format("2006-01-02 15:04:05")
-			log.Printf("[%s]成功更新%s的ip为%s\n", nowtime, name, ip)
+			log.Printf("[%s]成功更新%s.%s的ip为%s\n", nowtime, name, domain, ip)
 			break
 		} else {
 			retry++
@@ -212,13 +214,14 @@ func uploadIP(ip, name string, domain string, email string, key string) {
 	}
 	if retry >= 5 {
 		nowtime := time.Now().Format("2006/01/02-15:04:05")
-		log.Printf("[%s]ip更新失败\n", nowtime)
+		log.Printf("[%s]%s.%s的ip更新失败\n", nowtime, name, domain)
 	}
 }
 
 func handleMain(config Config, domainInfo []string) {
 	nowtime := time.Now().Format("2006-01-02 15:04:05")
-	result := getLatency(domainInfo[0]+"."+domainInfo[1], 10)
+	url := fmt.Sprintf("%s.%s", domainInfo[0], domainInfo[1])
+	result := getLatency(url, 10)
 	if result.Latency > 200 {
 		resp, err := http.Get("https://zip.baipiao.eu.org")
 		if err != nil {
@@ -273,14 +276,20 @@ func handleMain(config Config, domainInfo []string) {
 			}
 		}
 	} else {
-		log.Printf("[%s]ip延时小于200ms，未更新\n", nowtime)
+		log.Printf("[%s]域名%s的ip延时为%dms小于200ms，未更新\n", nowtime, url, result.Latency)
 	}
 
 }
 
 func main() {
-	// 读取同目录下的 config.json 文件
-	file, err := os.Open("config.json")
+	// 定义命令行参数
+	filePath := flag.String("file", "config.json", "文件路径和名称")
+
+	// 解析命令行参数
+	flag.Parse()
+
+	// 打开文件
+	file, err := os.Open(*filePath)
 	if err != nil {
 		log.Printf("无法打开配置文件: %v\n", err)
 	}
