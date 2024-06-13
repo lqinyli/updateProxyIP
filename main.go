@@ -290,6 +290,7 @@ func main() {
 
 	// 设置日志输出
 	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
 
 	// 打开文件
 	file, err := os.Open(*filePath)
