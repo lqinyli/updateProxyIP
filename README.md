@@ -6,7 +6,7 @@
 
 配置config.json
 
-{"email": "账户email", "key": "账户key", "domainInfos":[["名称", "根域", "目标文件名"], ["名称", "根域"]]}
+{"email": "账户email", "key": "账户key", "domainInfos":[["名称", "根域", "目标文件名关键字"], ["名称", "根域"]]}
 
 比如完整域名为 A.B.com，根域为 B.com 则config.json 为 
 
